@@ -1,7 +1,5 @@
 import pandas as pd
-
 from sqlalchemy.orm import Session
-
 from service.db.connection import engine
 
 def process_dates(df):
@@ -19,6 +17,11 @@ def limit_vagas(df):
     df['vagas_ocupadas'] = df.apply(lambda row: min(row['vagas_ocupadas'], row['total_vagas']), axis=1)
     return df
 
+def update_coordinator(df_curso, df_coordenador):
+    """Atualiza a dimensão cursos para incluir o nome do coordenador"""
+    df_curso['coordenador'] = df_curso['id_curso'].map(df_coordenador.set_index('id_curso')['nome_coordenador'])
+    return df_curso
+
 def load_to_datamart(df, session: Session):
     """Carrega os dados no Data Mart"""
     df.to_sql('fato_desempenho_academico', con=engine, if_exists='append', index=False)
@@ -26,9 +29,10 @@ def load_to_datamart(df, session: Session):
 
 def etl_process(data, session: Session):
     """Executa o processo ETL completo"""
-
+    # Transformações
     data = process_dates(data)
     data = categorize_reprova(data)
     data = limit_vagas(data)
     
+    # Carregar no Data Mart
     load_to_datamart(data, session)
