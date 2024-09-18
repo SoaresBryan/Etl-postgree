@@ -1,6 +1,8 @@
 import pandas as pd
+
 from sqlalchemy.orm import Session
-from db.connection import engine
+
+from service.db.connection import engine
 
 def process_dates(df):
     """Converte datas para o formato YYYYMMDD"""

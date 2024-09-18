@@ -1,7 +1,9 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from db.connection import get_db
-from utils.utils import etl_process
+
+from service.db.connection import get_db
+from service.utils.utils import etl_process
+
 import pandas as pd
 
 router = APIRouter()
